@@ -43,6 +43,16 @@ select:disabled,input:disabled{background:var(--dis);color:var(--hint)}
 .box.info{background:var(--acc2);border:1px solid var(--accbd);color:var(--accfg)}
 .box .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
 .box .btn{padding:6px 12px;font-size:12px}
+.sec-l{font-size:11px;font-weight:650;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.sup{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--soft)}
+.sup-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sup-h b{font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sup-x{border:0;background:none;color:var(--mut);font-size:18px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px}
+.sup-x:hover{background:var(--line);color:var(--bad)}
+.best{display:inline-block;font-size:10px;font-weight:700;color:var(--ok);background:var(--okbg);border-radius:4px;padding:1px 6px;margin-top:3px}
+.cmp th.sv,.cmp td.sv{text-align:right;white-space:nowrap}
+.cmp td.win,.cmp th.win{background:var(--okbg)}
+.cmpwrap{overflow-x:auto}
 .sub{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
 .dim{opacity:.4;pointer-events:none}
 .hidden{display:none!important}
@@ -159,24 +169,20 @@ tr:last-child td{border-bottom:0}
   <div class="card">
     <div class="ch"><span class="num">5</span><h2>Стоимость</h2><label class="sw"><input type="checkbox" id="price_on">включить</label></div>
     <div id="price_body" class="dim">
-      <div class="g2">
-        <div class="f"><label>Поставщик</label><input type="text" id="p_sup" placeholder="ООО …"></div>
-        <div class="f"><label>Город отгрузки</label><input type="text" id="p_city" placeholder="Красноярск"></div>
-        <div class="f"><label>Цена трубы</label><input type="number" id="p_pipe" min="0" step="0.01" placeholder="0"></div>
-        <div class="f"><label>Единица цены трубы</label><select id="p_pipe_u"><option value="kg">руб/кг</option><option value="m">руб/м</option></select></div>
-      </div>
-      <div class="g3" style="margin-top:10px">
-        <div class="f"><label>Втулка, ₽/шт</label><input type="number" id="p_stub" min="0" step="0.01"></div>
+      <div class="sec-l">Поставщики трубы</div>
+      <div id="sup_list"></div>
+      <button class="btn btn-out" id="sup_add" type="button" style="width:100%;margin-top:8px">+ Добавить поставщика</button>
+      <div class="sec-l" style="margin-top:14px">Общие цены для всех поставщиков</div>
+      <div class="g3">
         <div class="f"><label>Фланец, ₽/шт</label><input type="number" id="p_flan" min="0" step="0.01"></div>
         <div class="f"><label>Прокладка, ₽/шт</label><input type="number" id="p_gask" min="0" step="0.01"></div>
         <div class="f"><label>Болт/шпилька, ₽/шт</label><input type="number" id="p_bolt" min="0" step="0.01"></div>
         <div class="f"><label>Гайка, ₽/шт</label><input type="number" id="p_nut" min="0" step="0.01"></div>
         <div class="f"><label>Шайба, ₽/шт</label><input type="number" id="p_wash" min="0" step="0.01"></div>
         <div class="f"><label>Сварка, ₽/стык</label><input type="number" id="p_work" min="0" step="0.01"></div>
-        <div class="f"><label>Доставка, ₽ (всё)</label><input type="number" id="p_trans" min="0" step="1"></div>
         <div class="f"><label>НДС в ценах, %</label><input type="number" id="p_vat" value="22" min="0" step="1"></div>
       </div>
-      <div class="hint">Пустые цены не попадают в расчёт.</div>
+      <div class="hint">Пустые цены не попадают в расчёт. Поставщик без цены трубы в сравнении не участвует.</div>
     </div>
   </div>
 </section>
@@ -198,7 +204,7 @@ tr:last-child td{border-bottom:0}
   <div class="card"><div class="title-row"><h2>Спецификация</h2><span><button class="btn btn-dark noprint" id="btn_xlsx2">Excel</button> <button class="btn btn-out noprint" id="btn_copy2">Копировать</button><span class="copied hidden" id="copied">скопировано</span></span></div>
     <table><thead><tr><th>№</th><th>Наименование</th><th class="c">Ед.</th><th class="r">Кол-во</th></tr></thead><tbody id="spec"></tbody></table></div>
   <div class="card hidden" id="cost_card"><div class="title-row"><h2 id="cost_title">Стоимость</h2></div>
-    <table><thead><tr><th>Позиция</th><th>Расчёт</th><th class="r">Сумма, ₽</th></tr></thead><tbody id="cost"></tbody></table></div>
+    <table id="cost_single_t"><thead><tr><th>Позиция</th><th>Расчёт</th><th class="r">Сумма, ₽</th></tr></thead><tbody id="cost_single"></tbody></table><div id="cost_cmp"></div></div>
 </section>
 </main>
 
@@ -274,13 +280,15 @@ $('sdr').innerHTML=SDRS.map(s=>`<option value="${s}">SDR ${sdrRu(s)}</option>`).
 $('du').innerHTML=Object.keys(FL).map(k=>`<option value="${k}">Ду ${k}</option>`).join('');
 $('m_thr').innerHTML=THREADS.map(t=>`<option value="${t}">M${t}</option>`).join('');
 $('m_len').innerHTML=LENS.map(t=>`<option value="${t}">${t}</option>`).join('');
-const S={manual:false,pnDismiss:''};
-const IDS=['d','sdr','du','pn','mat','len','len_custom','cnt','stub_len','joints','metiz_on','btype','gtype','wash_on','wash_n','m_n','m_thr','m_len','collar','price_on','p_sup','p_city','p_pipe','p_pipe_u','p_stub','p_flan','p_gask','p_bolt','p_nut','p_wash','p_work','p_trans','p_vat'];
+const S={manual:false,pnDismiss:'',sup:[]};
+const IDS=['d','sdr','du','pn','mat','len','len_custom','cnt','stub_len','joints','metiz_on','btype','gtype','wash_on','wash_n','m_n','m_thr','m_len','collar','price_on','p_flan','p_gask','p_bolt','p_nut','p_wash','p_work','p_vat'];
 const KEY='flantsovka_pe100_v2';
-function save(){try{const o={_manual:S.manual};IDS.forEach(i=>{const e=$(i);o[i]=e.type==='checkbox'?e.checked:e.value;});localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}}
+function save(){try{const o={_manual:S.manual,_sup:S.sup};IDS.forEach(i=>{const e=$(i);o[i]=e.type==='checkbox'?e.checked:e.value;});localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}}
 function load(){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(!o)return false;
   IDS.forEach(i=>{if(o[i]===undefined)return;const e=$(i);if(e.type==='checkbox')e.checked=o[i];else e.value=o[i];});
-  S.manual=!!o._manual;$('m_on').checked=S.manual;return true;}catch(e){return false;}}
+  S.manual=!!o._manual;$('m_on').checked=S.manual;
+  if(Array.isArray(o._sup))S.sup=o._sup;else if(o.p_pipe||o.p_sup)S.sup=[{n:o.p_sup||'',c:o.p_city||'',pp:o.p_pipe||'',pu:o.p_pipe_u||'kg',st:o.p_stub||'',tr:o.p_trans||''}];
+  return true;}catch(e){return false;}}
 function onD(){const d=+$('d').value;$('du').value=D2DU[d];$('stub_len').value=defStub(d);$('collar').value=defCollar(d);}
 if(!load()){$('d').value=160;$('sdr').value='17';$('pn').value=10;onD();}
 
@@ -346,27 +354,43 @@ function calc(){
   // стоимость
   const pOn=$('price_on').checked;$('price_body').classList.toggle('dim',!pOn);$('cost_card').classList.toggle('hidden',!pOn);
   S.cost=null;
-  if(pOn){const v=id=>Math.max(0,parseFloat($(id).value)||0);
-    const pu=$('p_pipe_u').value,pp=v('p_pipe');
-    const costPipe=pu==='kg'?kg*pp:pipeLen*pp;
-    const items=[[`Труба`,pu==='kg'?`${ru(kg,1)} кг × ${ru(pp,2)}`:`${ru(pipeLen,1)} м × ${ru(pp,2)}`,costPipe,'pipe'],
-      ['Втулки',`${tS} × ${ru(v('p_stub'),2)}`,tS*v('p_stub'),'stub'],['Фланцы',`${tF} × ${ru(v('p_flan'),2)}`,tF*v('p_flan'),'flan']];
+  if(pOn){const v=id=>Math.max(0,parseFloat($(id).value)||0),nv=x=>Math.max(0,parseFloat(x)||0);
+    const C={pipeLen,kg,tS,N,base};
+    const items=[['Фланцы',`${tF} × ${ru(v('p_flan'),2)}`,tF*v('p_flan'),'flan']];
     if(metiz)items.push(['Прокладки',`${tG} × ${ru(v('p_gask'),2)}`,tG*v('p_gask'),'gask'],[bt==='bolt'?'Болты':'Шпильки',`${tB} × ${ru(v('p_bolt'),2)}`,tB*v('p_bolt'),'bolt'],
       ['Гайки',`${tN} × ${ru(v('p_nut'),2)}`,tN*v('p_nut'),'nut']);
     if(metiz&&wn)items.push(['Шайбы',`${tW} × ${ru(v('p_wash'),2)}`,tW*v('p_wash'),'wash']);
     items.push(['Сварка втулок',`${tS} ${pl(tS,'стык','стыка','стыков')} × ${ru(v('p_work'),2)}`,tS*v('p_work'),'work']);
-    const shown=items.filter(x=>x[2]>0),sub=shown.reduce((a,x)=>a+x[2],0),tr=v('p_trans'),tot=sub+tr,vat=v('p_vat'),vatSum=tot*vat/(100+vat);
-    let h2=shown.map(x=>`<tr><td>${x[0]}</td><td style="color:var(--mut);font-size:12px">${x[1]}</td><td class="r">${ru(x[2],2)}</td></tr>`).join('');
+    const vat=v('p_vat'),common=items.filter(x=>x[2]>0);
+    const sups=(S.sup.length?S.sup:[{}]).map((u,i)=>{const pp=nv(u.pp),pu=u.pu||'kg',st=nv(u.st),tr=nv(u.tr);
+      const pipe=pu==='kg'?kg*pp:pipeLen*pp;
+      const own=[[`Труба`,pu==='kg'?`${ru(kg,1)} кг × ${ru(pp,2)}`:`${ru(pipeLen,1)} м × ${ru(pp,2)}`,pipe,'pipe'],['Втулки',`${tS} × ${ru(st,2)}`,tS*st,'stub']];
+      const all=own.concat(items),sub=all.reduce((a,x)=>a+x[2],0);
+      return{i,noSt:!(st>0),name:(u.n||'').trim()||`Поставщик ${i+1}`,city:(u.c||'').trim(),pp,pipe,stub:tS*st,common:items.reduce((a,x)=>a+(x[3]==='work'?0:x[2]),0),work:items.filter(x=>x[3]==='work').reduce((a,x)=>a+x[2],0),sub,tr,tot:sub+tr,all};});
+    const valid=sups.filter(x=>x.pp>0),bestTot=valid.length?Math.min(...valid.map(x=>x.tot)):null,best=valid.find(x=>x.tot===bestTot);
+    let h2;
+    if(sups.length===1){const u=sups[0],shown=u.all.filter(x=>x[2]>0),sub=u.sub,tr=u.tr,tot=u.tot,vatSum=tot*vat/(100+vat);
+    h2=shown.map(x=>`<tr><td>${x[0]}</td><td style="color:var(--mut);font-size:12px">${x[1]}</td><td class="r">${ru(x[2],2)}</td></tr>`).join('');
     if(!shown.length)h2=`<tr><td colspan="3" style="color:var(--mut)">Введите цены слева.</td></tr>`;
     h2+=`<tr class="tot"><td>Итого без доставки</td><td></td><td class="r">${ru(sub,2)}</td></tr>`;
     h2+=`<tr><td>1 отрезок под ключ</td><td style="color:var(--mut);font-size:12px">${ru(base,base%1?1:0)} м, без доставки</td><td class="r">${ru(sub/N,2)}</td></tr>`;
     if(pipeLen)h2+=`<tr><td>1 метр трубы</td><td style="color:var(--mut);font-size:12px">без доставки</td><td class="r">${ru(sub/pipeLen,2)}</td></tr>`;
     if(tr)h2+=`<tr><td>Доставка</td><td style="color:var(--mut);font-size:12px">весь объём</td><td class="r">${ru(tr,2)}</td></tr><tr class="tot"><td>Итого с доставкой</td><td></td><td class="r">${ru(tot,2)}</td></tr>`;
     if(vat)h2+=`<tr><td style="color:var(--mut)">в т.ч. НДС ${vat}%</td><td></td><td class="r" style="color:var(--mut)">${ru(vatSum,2)}</td></tr>`;
-    $('cost').innerHTML=h2;
-    const sup=$('p_sup').value.trim(),city=$('p_city').value.trim();
-    $('cost_title').textContent='Стоимость'+(sup?' — '+sup:'')+(city?', '+city:'');
-    S.cost={map:Object.fromEntries(items.map(x=>[x[3],x[2]])),sub,tr,tot};
+    $('cost_single').innerHTML=h2;$('cost_single_t').classList.remove('hidden');$('cost_cmp').innerHTML='';
+    $('cost_title').textContent='Стоимость'+(S.sup[0]&&S.sup[0].n?' — '+S.sup[0].n.trim():'')+(u.city?', '+u.city:'');}
+    else{$('cost_single_t').classList.add('hidden');$('cost_title').textContent=`Сравнение поставщиков (${sups.length})`;
+      const col=x=>x===best?' win':'';
+      const row=(l,f,cls,sub)=>`<tr class="${cls||''}"><td>${l}${sub?`<div style="color:var(--mut);font-size:11px;font-weight:400">${sub}</div>`:''}</td>${sups.map(x=>`<td class="sv${col(x)}">${f(x)}</td>`).join('')}</tr>`;
+      const m=x=>x.pp>0?ru(x,2):'—',money=k=>x=>x.pp>0?ru(x[k],2):'—';
+      let t=`<div class="cmpwrap"><table class="cmp"><thead><tr><th></th>${sups.map(x=>`<th class="sv${col(x)}">${esc2(x.name)}${x.city?`<div style="font-weight:500;text-transform:none;letter-spacing:0">${esc2(x.city)}</div>`:''}${x===best?'<div class="best">выгоднее всех</div>':''}</th>`).join('')}</tr></thead><tbody>`;
+      t+=row('Труба',money('pipe'),'',`${ru(pipeLen,1)} м · ${ru(kg,0)} кг`)+row('Втулки',x=>x.pp>0?(x.noSt&&tS?'<span style="color:var(--warn)" title="Цена втулки не указана — итог занижен">нет цены</span>':ru(x.stub,2)):'—','',`${tS} шт`)+row('Фланцы, прокладки, метизы',money('common'),'','общие цены')+row('Сварка втулок',money('work'),'','общая цена');
+      t+=row('Итого без доставки',money('sub'),'tot')+row('Доставка',money('tr'))+row('Итого с доставкой',money('tot'),'tot');
+      t+=row('1 отрезок',x=>x.pp>0?ru(x.tot/N,2):'—','',`${ru(base,base%1?1:0)} м, с доставкой`)+row('1 метр трубы',x=>x.pp>0&&pipeLen?ru(x.tot/pipeLen,2):'—','','с доставкой');
+      if(vat)t+=row(`в т.ч. НДС ${vat}%`,x=>x.pp>0?ru(x.tot*vat/(100+vat),2):'—');
+      if(best&&valid.length>1)t+=row('Дороже лучшего',x=>x.pp>0?(x===best?'—':'+'+ru(x.tot-bestTot,0)+' ₽ ('+ru((x.tot-bestTot)/bestTot*100,1)+'%)'):'—');
+      t+='</tbody></table></div>';$('cost_cmp').innerHTML=t;$('cost_single').innerHTML='';}
+    const ref=best||sups[0];S.cost={map:Object.fromEntries(ref.all.map(x=>[x[3],x[2]])),sub:ref.sub,tr:ref.tr,tot:ref.tot,sups,ref,multi:sups.length>1};
   }
   draw({d,Du,PN,metiz,nB,M,L,bt,gt,diff,wn});
   draw3d({d,sdr,Du,PN,metiz,nB,M,L,bt,gt,b,h,stubL,g:GASK_T[gt],wn});
@@ -520,12 +544,40 @@ function exportXlsx(){const aoa=specAoa(),fn=S.fn||'Спецификация';
 function copySpec(){
   const pOn=S.cost;let t=['№','Наименование','Ед.','Кол-во'].concat(pOn?['Сумма, ₽']:[]).join('\t')+'\n';
   S.rows.forEach((r,i)=>{t+=[i+1,r.n,r.u,String(r.dec?r.q.toFixed(1):r.q).replace('.',',')].concat(pOn?[(pOn.map[r.k]||0).toFixed(2).replace('.',',')]:[]).join('\t')+'\n';});
-  if(pOn){if(pOn.map.work)t+=`\tСварка втулок\t\t\t${pOn.map.work.toFixed(2).replace('.',',')}\n`;
-    t+=`\tИтого без доставки\t\t\t${pOn.sub.toFixed(2).replace('.',',')}\n`;if(pOn.tr)t+=`\tИтого с доставкой\t\t\t${pOn.tot.toFixed(2).replace('.',',')}\n`;}
+  const f2=x=>x.toFixed(2).replace('.',',');
+  if(pOn&&!pOn.multi){if(pOn.map.work)t+=`\tСварка втулок\t\t\t${f2(pOn.map.work)}\n`;
+    t+=`\tИтого без доставки\t\t\t${f2(pOn.sub)}\n`;if(pOn.tr)t+=`\tИтого с доставкой\t\t\t${f2(pOn.tot)}\n`;}
+  if(pOn&&pOn.multi){const sp=pOn.sups;t=t.replace('\tСумма, ₽','\tСумма, ₽ ('+pOn.ref.name+')');
+    t+='\nСравнение поставщиков\t'+sp.map(x=>x.name+(x.city?', '+x.city:'')).join('\t')+'\n';
+    [['Труба','pipe'],['Втулки','stub'],['Фланцы, прокладки, метизы','common'],['Сварка втулок','work'],['Итого без доставки','sub'],['Доставка','tr'],['Итого с доставкой','tot']]
+      .forEach(([l,k])=>{t+=l+'\t'+sp.map(x=>x.pp>0?f2(x[k]):'').join('\t')+'\n';});}
   const done=()=>{$('copied').classList.remove('hidden');setTimeout(()=>$('copied').classList.add('hidden'),1600);};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fb(t,done));else fb(t,done);
 }
 function fb(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done();}catch(e){}a.remove();}
+
+// ---------- поставщики ----------
+function esc2(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function supTitle(u,i){return (u.n||'').trim()||`Поставщик ${i+1}`;}
+function renderSup(){if(!S.sup.length)S.sup=[{n:'',c:'',pp:'',pu:'kg',st:'',tr:''}];
+  $('sup_list').innerHTML=S.sup.map((u,i)=>`<div class="sup" data-i="${i}">
+    <div class="sup-h"><b>${esc2(supTitle(u,i))}</b>${S.sup.length>1?`<button class="sup-x" type="button" data-del="${i}" title="Удалить поставщика" aria-label="Удалить поставщика">×</button>`:''}</div>
+    <div class="g2">
+      <div class="f"><label for="sn${i}">Поставщик</label><input type="text" id="sn${i}" data-i="${i}" data-f="n" value="${esc2(u.n||'')}" placeholder="ООО …"></div>
+      <div class="f"><label for="sc${i}">Город отгрузки</label><input type="text" id="sc${i}" data-i="${i}" data-f="c" value="${esc2(u.c||'')}" placeholder="Красноярск"></div>
+    </div>
+    <div class="g2" style="margin-top:8px">
+      <div class="f"><label for="sp${i}">Цена трубы</label><input type="number" id="sp${i}" data-i="${i}" data-f="pp" min="0" step="0.01" value="${esc2(u.pp||'')}" placeholder="0"></div>
+      <div class="f"><label for="su${i}">Единица</label><select id="su${i}" data-i="${i}" data-f="pu"><option value="kg"${u.pu!=='m'?' selected':''}>руб/кг</option><option value="m"${u.pu==='m'?' selected':''}>руб/м</option></select></div>
+      <div class="f"><label for="ss${i}">Втулка, ₽/шт</label><input type="number" id="ss${i}" data-i="${i}" data-f="st" min="0" step="0.01" value="${esc2(u.st||'')}"></div>
+      <div class="f"><label for="st${i}">Доставка, ₽ (всё)</label><input type="number" id="st${i}" data-i="${i}" data-f="tr" min="0" step="1" value="${esc2(u.tr||'')}"></div>
+    </div></div>`).join('');}
+['input','change'].forEach(ev=>$('sup_list').addEventListener(ev,e=>{const t=e.target,i=t.dataset.i,f=t.dataset.f;if(i===undefined||!f)return;
+  S.sup[i][f]=t.value;if(f==='n')t.closest('.sup').querySelector('.sup-h b').textContent=supTitle(S.sup[i],+i);if(ev==='change')calc();}));
+$('sup_list').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;S.sup.splice(+b.dataset.del,1);renderSup();calc();});
+$('sup_add').onclick=()=>{const last=S.sup[S.sup.length-1]||{};S.sup.push({n:'',c:'',pp:'',pu:last.pu||'kg',st:'',tr:''});renderSup();calc();
+  const n=S.sup.length-1;setTimeout(()=>{const el=$('sn'+n);if(el)el.focus();},0);};
+renderSup();
 
 // ---------- события ----------
 document.addEventListener('input',e=>{if(e.target.closest('.inputs')&&e.target.id!=='m_on')calc();});
