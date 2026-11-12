@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Офланцовка ПЭ100</title>
+<style>
+:root{--bg:#f2f4f7;--card:#fff;--ink:#1a2230;--mut:#667085;--line:#e3e7ee;--line2:#f0f2f5;--bd2:#cfd5df;--dis:#f4f5f7;--soft:#f5f7fa;--acc:#1f5fae;--acc2:#e8f0fb;--accbd:#c4d7f2;--accfg:#173a66;--warn:#b54708;--warnbg:#fff6e5;--warnbd:#f5c26b;--warnfg:#5c3a00;--bad:#b42318;--badbg:#fdecea;--badbd:#f4b4ae;--badfg:#5d140e;--ok:#067647;--okbg:#e7f6ee;--g1:#f7f9fc;--g2:#e6ebf2;--hint:#8a93a3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11161e;--card:#1a212c;--ink:#e6eaf0;--mut:#98a2b3;--line:#2a3340;--line2:#232b36;--bd2:#384353;--dis:#222a35;--soft:#202834;--acc:#6aa5f0;--acc2:#1c2c44;--accbd:#2c4568;--accfg:#c9dcf7;--warn:#f0a35c;--warnbg:#2e2414;--warnbd:#6b5121;--warnfg:#f3d9b0;--bad:#f0857a;--badbg:#2f1a19;--badbd:#6a2f2a;--badfg:#f6c9c4;--ok:#5fd39a;--okbg:#163024;--g1:#1e2631;--g2:#141a22;--hint:#7d8796;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11161e;--card:#1a212c;--ink:#e6eaf0;--mut:#98a2b3;--line:#2a3340;--line2:#232b36;--bd2:#384353;--dis:#222a35;--soft:#202834;--acc:#6aa5f0;--acc2:#1c2c44;--accbd:#2c4568;--accfg:#c9dcf7;--warn:#f0a35c;--warnbg:#2e2414;--warnbd:#6b5121;--warnfg:#f3d9b0;--bad:#f0857a;--badbg:#2f1a19;--badbd:#6a2f2a;--badfg:#f6c9c4;--ok:#5fd39a;--okbg:#163024;--g1:#1e2631;--g2:#141a22;--hint:#7d8796;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+.top{background:#14243d;color:#fff;padding:18px 0}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.top h1{font-size:20px;font-weight:650}
+.top p{font-size:12px;color:#a9b8cf}
+.top-actions{display:flex;gap:8px}
+.btn{border:0;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-light{background:#fff;color:#14243d}.btn-ghost{background:#26395a;color:#fff}
+.btn-dark{background:var(--ink);color:var(--card)}.btn-out{background:var(--card);color:var(--ink);border:1px solid var(--bd2)}
+.btn:hover{opacity:.88}
+.grid{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:18px;padding-top:18px;padding-bottom:40px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.num{width:22px;height:22px;border-radius:50%;background:var(--acc);color:var(--card);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.ch h2{font-size:14px;font-weight:650}
+.ch .sw{margin-left:auto}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-size:12px;color:var(--mut);font-weight:500}
+select,input[type=number],input[type=text]{width:100%;padding:7px 9px;border:1px solid var(--bd2);border-radius:7px;font-size:14px;background:var(--card);color:var(--ink)}
+select:focus,input:focus{outline:2px solid var(--acc2);border-color:var(--acc)}
+select:disabled,input:disabled{background:var(--dis);color:var(--hint)}
+.hint{font-size:12px;color:var(--mut);margin-top:8px}
+.chip{display:inline-block;background:var(--acc2);color:var(--acc);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600;margin:2px 4px 2px 0}
+.sw{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);cursor:pointer;user-select:none}
+.sw input{width:16px;height:16px;accent-color:var(--acc)}
+.box{border-radius:8px;padding:10px 12px;font-size:13px;margin-top:10px}
+.box b{font-weight:650}
+.box.warn{background:var(--warnbg);border:1px solid var(--warnbd);color:var(--warnfg)}
+.box.bad{background:var(--badbg);border:1px solid var(--badbd);color:var(--badfg)}
+.box.info{background:var(--acc2);border:1px solid var(--accbd);color:var(--accfg)}
+.box .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.box .btn{padding:6px 12px;font-size:12px}
+.sub{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+.dim{opacity:.4;pointer-events:none}
+.hidden{display:none!important}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .l{font-size:11px;color:var(--mut)}.kpi .v{font-size:20px;font-weight:700}.kpi .u{font-size:12px;color:var(--mut);font-weight:500}
+.kpi .s{font-size:11px;color:var(--mut)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.r{text-align:right;white-space:nowrap}.c{text-align:center;color:var(--mut)}
+.tot td{background:var(--soft);font-weight:700}
+.tag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:1px}
+.tag.bad{background:var(--badbg);color:var(--bad)}.tag.ok{background:var(--okbg);color:var(--ok)}
+.svgwrap{overflow-x:auto}
+.copied{color:var(--ok);font-size:12px;margin-left:8px}
+.title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.title-row h2{font-size:14px;font-weight:650}
+.out{position:sticky;top:12px}
+.tabs{display:flex;background:var(--soft);border-radius:8px;padding:3px}
+.tab{border:0;background:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer}
+.tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.c3d{position:relative;height:380px;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,var(--g1),var(--g2))}
+.c3d canvas{display:block;width:100%!important;height:100%!important;cursor:grab}
+.c3d-hint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--hint);pointer-events:none}
+.ctl3d{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.15)}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.out{position:static}.kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.g3{grid-template-columns:1fr 1fr}}
+@media print{.top-actions,.inputs,.noprint{display:none!important}.grid{display:block}body{background:#fff}.card,.kpi{border-color:#ccc}.top{background:#fff;color:#000;border-bottom:2px solid #000}.top p{color:#444}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div><h1>Офланцовка трубы ПЭ100</h1>
+  <p>Фланцы ГОСТ 33259-2015 (тип 01, ряд 1) · труба ГОСТ Р 70628.2-2023 · втулки ГОСТ Р 70628.3-2023 · болты ГОСТ 7798-70 · шпильки ГОСТ 22042-76 · гайки ГОСТ 5915-70 · шайбы ГОСТ 11371-78 · прокладки ГОСТ 15180-86</p></div>
+  <div class="top-actions"><button class="btn btn-light" id="btn_xlsx">Скачать спецификацию (Excel)</button><button class="btn btn-ghost" id="btn_print">Печать / PDF</button></div>
+</div></header>
+
+<main class="wrap grid">
+<section class="inputs">
+
+  <div class="card">
+    <div class="ch"><span class="num">1</span><h2>Труба</h2></div>
+    <div class="g2">
+      <div class="f"><label>Наружный диаметр d, мм</label><select id="d"></select></div>
+      <div class="f"><label>SDR</label><select id="sdr"></select></div>
+    </div>
+    <div class="hint" id="pipe_info"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="num">2</span><h2>Фланцы</h2></div>
+    <div class="g3">
+      <div class="f"><label>Условный проход Ду</label><select id="du"></select></div>
+      <div class="f"><label>Давление PN</label><select id="pn"><option>6</option><option>10</option><option>16</option><option>25</option></select></div>
+      <div class="f"><label>Материал</label><select id="mat"><option>Ст20</option><option>09Г2С</option></select></div>
+    </div>
+    <div class="hint" id="du_hint"></div>
+    <div id="pn_box"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="num">3</span><h2>Отрезки</h2></div>
+    <div class="g3">
+      <div class="f"><label>Длина отрезка, м</label><select id="len"><option>6</option><option>8</option><option>10</option><option selected>12</option><option value="custom">другая…</option></select></div>
+      <div class="f hidden" id="len_custom_f"><label>Своя длина, м</label><input type="number" id="len_custom" value="12" min="0.5" step="0.5"></div>
+      <div class="f"><label>Количество, шт</label><input type="number" id="cnt" value="5" min="1" step="1"></div>
+      <div class="f"><label>Длина втулки, мм</label><input type="number" id="stub_len" min="0" step="5"></div>
+    </div>
+    <div class="f" style="margin-top:10px"><label>Комплекты метизов и прокладок считать на</label>
+      <select id="joints">
+        <option value="n1">соединения в линию + 2 конца к арматуре (N+1)</option>
+        <option value="nm1">только соединения между отрезками (N−1)</option>
+        <option value="2n">каждый фланец отдельно (2N)</option>
+      </select></div>
+    <div class="hint">Длина втулки зависит от производителя — проверьте по паспорту, значение подставляется типовое.</div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="num">4</span><h2>Метизы и прокладки</h2><label class="sw"><input type="checkbox" id="metiz_on" checked>включить</label></div>
+    <div id="metiz_body">
+      <div class="g2">
+        <div class="f"><label>Крепёж</label><select id="btype"><option value="bolt">Болты + гайки</option><option value="stud">Шпильки + 2 гайки</option></select></div>
+        <div class="f"><label>Прокладка</label><select id="gtype"><option value="paronit">Паронит ПОН-Б</option><option value="rubber">Резина</option><option value="ptfe">PTFE</option></select></div>
+      </div>
+      <div class="g2" style="margin-top:10px;align-items:end">
+        <label class="sw" style="color:var(--ink);font-size:13px;padding-bottom:8px"><input type="checkbox" id="wash_on">Добавить шайбы в расчёт</label>
+        <div class="f" id="wash_f"><label>Шайб на болт/шпильку</label><select id="wash_n"><option value="1">1 — под гайку</option><option value="2">2 — с обеих сторон</option></select></div>
+      </div>
+      <div class="box info" id="gost_box"></div>
+      <div class="sub">
+        <label class="sw" style="color:var(--ink);font-size:13px"><input type="checkbox" id="m_on">Задать метизы вручную</label>
+        <div class="box warn hidden" id="m_confirm"></div>
+        <div id="m_body" class="g3 hidden" style="margin-top:10px">
+          <div class="f"><label>Болтов на соединение</label><input type="number" id="m_n" min="1" step="1"></div>
+          <div class="f"><label>Резьба</label><select id="m_thr"></select></div>
+          <div class="f"><label>Длина, мм</label><select id="m_len"></select></div>
+        </div>
+        <div class="g2" style="margin-top:10px">
+          <div class="f"><label>Толщина бурта втулки, мм</label><input type="number" id="collar" min="0" step="1"></div>
+          <div class="f"><label>Длина по расчёту</label><input type="text" id="len_auto" disabled></div>
+        </div>
+        <div class="hint">Длина = 2 фланца + 2 бурта + прокладка + шайбы (если включены) + гайки + выход резьбы, округлено до стандартной.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="num">5</span><h2>Стоимость</h2><label class="sw"><input type="checkbox" id="price_on">включить</label></div>
+    <div id="price_body" class="dim">
+      <div class="g2">
+        <div class="f"><label>Поставщик</label><input type="text" id="p_sup" placeholder="ООО …"></div>
+        <div class="f"><label>Город отгрузки</label><input type="text" id="p_city" placeholder="Красноярск"></div>
+        <div class="f"><label>Цена трубы</label><input type="number" id="p_pipe" min="0" step="0.01" placeholder="0"></div>
+        <div class="f"><label>Единица цены трубы</label><select id="p_pipe_u"><option value="kg">руб/кг</option><option value="m">руб/м</option></select></div>
+      </div>
+      <div class="g3" style="margin-top:10px">
+        <div class="f"><label>Втулка, ₽/шт</label><input type="number" id="p_stub" min="0" step="0.01"></div>
+        <div class="f"><label>Фланец, ₽/шт</label><input type="number" id="p_flan" min="0" step="0.01"></div>
+        <div class="f"><label>Прокладка, ₽/шт</label><input type="number" id="p_gask" min="0" step="0.01"></div>
+        <div class="f"><label>Болт/шпилька, ₽/шт</label><input type="number" id="p_bolt" min="0" step="0.01"></div>
+        <div class="f"><label>Гайка, ₽/шт</label><input type="number" id="p_nut" min="0" step="0.01"></div>
+        <div class="f"><label>Шайба, ₽/шт</label><input type="number" id="p_wash" min="0" step="0.01"></div>
+        <div class="f"><label>Сварка, ₽/стык</label><input type="number" id="p_work" min="0" step="0.01"></div>
+        <div class="f"><label>Доставка, ₽ (всё)</label><input type="number" id="p_trans" min="0" step="1"></div>
+        <div class="f"><label>НДС в ценах, %</label><input type="number" id="p_vat" value="22" min="0" step="1"></div>
+      </div>
+      <div class="hint">Пустые цены не попадают в расчёт.</div>
+    </div>
+  </div>
+</section>
+
+<section class="out" id="out">
+  <div class="kpis" id="kpis"></div>
+  <div class="card"><div class="title-row"><h2>Узел соединения</h2>
+      <div class="tabs noprint"><button class="tab on" data-v="3d">3D</button><button class="tab" data-v="2d">Схема</button></div></div>
+    <div id="v3d">
+      <div class="c3d" id="c3d"><div class="c3d-hint">вращать — ЛКМ · сдвиг — ПКМ · масштаб — колесо</div></div>
+      <div class="ctl3d noprint">
+        <label class="sw" style="color:var(--ink)">Разнести детали <input type="range" id="explode" min="0" max="1" step="0.01" value="0" style="width:140px"></label>
+        <label class="sw" style="color:var(--ink)"><input type="checkbox" id="cut">Разрез</label>
+        <button class="btn btn-out" id="reset3d" style="padding:5px 10px;font-size:12px">Сброс вида</button>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div id="v2d" class="svgwrap hidden"><svg id="svg" viewBox="0 0 760 230" style="width:100%;min-width:560px;display:block"></svg></div></div>
+  <div class="card"><div class="title-row"><h2>Спецификация</h2><span><button class="btn btn-dark noprint" id="btn_xlsx2">Excel</button> <button class="btn btn-out noprint" id="btn_copy2">Копировать</button><span class="copied hidden" id="copied">скопировано</span></span></div>
+    <table><thead><tr><th>№</th><th>Наименование</th><th class="c">Ед.</th><th class="r">Кол-во</th></tr></thead><tbody id="spec"></tbody></table></div>
+  <div class="card hidden" id="cost_card"><div class="title-row"><h2 id="cost_title">Стоимость</h2></div>
+    <table><thead><tr><th>Позиция</th><th>Расчёт</th><th class="r">Сумма, ₽</th></tr></thead><tbody id="cost"></tbody></table></div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const D_LIST=[40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630,710,800,900,1000,1200,1400,1600];
+const SDRS=['6','7.4','9','11','13.6','17','21','26'];
+// Номинальное давление трубы ПЭ100 по SDR (ГОСТ Р 70628.2-2023), бар
+const PIPE_PN={'6':32,'7.4':25,'9':20,'11':16,'13.6':12.5,'17':10,'21':8,'26':6.3};
+// d трубы -> Ду фланца (по диаметру бурта втулки)
+const D2DU={40:32,50:40,63:50,75:65,90:80,110:100,125:100,140:125,160:150,180:150,200:200,225:200,250:250,280:250,315:300,355:350,400:400,450:450,500:500,560:600,630:600,710:700,800:800,900:900,1000:1000,1200:1200,1400:1400,1600:1600};
+// ГОСТ 33259-2015, тип 01: [толщина b, кол-во отв. n, резьба M, ряд]; ряд 1, где в ряду 1 нет — ряд 2
+const FL={
+32:{6:[15,4,12],10:[16,4,16],16:[18,4,16],25:[20,4,16]},
+40:{6:[16,4,12],10:[18,4,16],16:[20,4,16],25:[22,4,16]},
+50:{6:[16,4,12],10:[18,4,16],16:[22,4,16],25:[24,4,16]},
+65:{6:[16,4,12],10:[20,4,16],16:[22,4,16],25:[24,8,16]},
+80:{6:[18,4,16],10:[20,4,16],16:[24,4,16],25:[26,8,16]},
+100:{6:[18,4,16],10:[22,8,16],16:[26,8,16],25:[28,8,20]},
+125:{6:[20,8,16],10:[24,8,16],16:[28,8,16],25:[30,8,24]},
+150:{6:[20,8,16],10:[24,8,20],16:[28,8,20],25:[30,8,24]},
+200:{6:[22,8,16],10:[24,8,20],16:[30,12,20],25:[32,12,24]},
+250:{6:[23,12,16],10:[26,12,20],16:[31,12,24],25:[34,12,27]},
+300:{6:[24,12,20],10:[28,12,20],16:[32,12,24],25:[36,16,27]},
+350:{6:[26,12,20],10:[28,16,20],16:[34,16,24],25:[42,16,30]},
+400:{6:[28,16,20],10:[30,16,24],16:[38,16,27],25:[44,16,30]},
+450:{6:[28,16,20],10:[30,20,24],16:[42,20,27],25:[48,20,30]},
+500:{6:[29,20,20],10:[32,20,24],16:[48,20,30],25:[52,20,36]},
+600:{6:[30,20,24],10:[36,20,27],16:[50,20,36],25:[54,20,36]},
+700:{6:[32,24,24],10:[39,24,27],16:[52,24,36],25:[60,24,42]},
+800:{6:[32,24,27],10:[42,24,30],16:[54,24,36],25:[68,24,42]},
+900:{6:[34,24,27],10:[45,28,30],16:[59,28,36]},
+1000:{6:[36,28,27],10:[48,28,30],16:[63,28,42]},
+1200:{6:[39,32,30],10:[56,32,36],16:[76,32,45,2]},
+1400:{6:[48,36,30],10:[66,36,39,2]},
+1600:{6:[53,40,30],10:[75,40,45,2]}};
+const THREADS=[10,12,16,20,24,27,30,33,36,39,42,45,48,52];
+const LENS=[40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,140,150,160,170,180,190,200,220,240,260,280,300,320,340,360,380,400,420,450,480,500];
+const NUT_H={10:8,12:10,16:13,20:16,24:19,27:22,30:24,33:26,36:29,39:31,42:34,45:36,48:38,52:42}; // ГОСТ 5915-70
+const WASH_S=M=>M<=12?2.5:M<=20?3:M<=30?4:M<=36?5:M<=42?6:8; // ГОСТ 11371-78
+const GASK_T={paronit:3,rubber:4,ptfe:3};
+// Вес трубы ПЭ100, кг/м (ГОСТ Р 70628.2-2023); нет в таблице — считается по геометрии
+const W={40:{21:.244,17:.292,13.6:.353,11:.427,9:.509},50:{26:.308,21:.369,17:.449,13.6:.545,11:.663,9:.788},
+63:{26:.488,21:.573,17:.715,13.6:.869,11:1.05,9:1.26},75:{26:.668,21:.821,17:1.01,13.6:1.23,11:1.46,9:1.76},
+90:{26:.969,21:1.18,17:1.45,13.6:1.76,11:2.12,9:2.54},110:{26:1.42,21:1.77,17:2.16,13.6:2.61,11:3.14,9:3.78},
+125:{26:1.83,21:2.26,17:2.75,13.6:3.37,11:4.08,9:4.87},140:{26:2.31,21:2.83,17:3.46,13.6:4.22,11:5.08,9:6.11},
+160:{26:3.03,21:3.71,17:4.51,13.6:5.50,11:6.67,9:7.96},180:{26:3.78,21:4.66,17:5.71,13.6:6.98,11:8.43,9:10.1},
+200:{26:4.68,21:5.77,17:7.04,13.6:8.56,11:10.4,9:12.4},225:{26:5.88,21:7.29,17:8.94,13.6:10.9,11:13.2,9:15.8},
+250:{26:7.29,21:8.92,17:11.0,13.6:13.4,11:16.2,9:19.4},280:{26:9.09,21:11.3,17:13.8,13.6:16.8,11:20.3,9:24.3},
+315:{26:11.6,21:14.2,17:17.4,13.6:21.3,11:25.7,9:30.8},355:{26:14.6,21:18.0,17:22.2,13.6:27.0,11:32.6,9:39.1},
+400:{26:18.6,21:22.9,17:28.0,13.6:34.2,11:41.4,9:49.6},450:{26:23.5,21:29.0,17:35.5,13.6:43.3,11:52.4,9:62.7},
+500:{26:29.0,21:35.8,17:43.9,13.6:53.5,11:64.7,9:77.3},560:{26:36.3,21:44.8,17:55.0,13.6:67.1,11:81.0,9:97.0},
+630:{26:46.0,21:56.5,17:69.6,13.6:84.8,11:103,9:125},710:{26:58.5,21:72.1,17:88.4,13.6:108,11:131},
+800:{26:74.1,21:91.4,17:112,13.6:137,11:166},900:{26:93.8,21:116,17:142,13.6:173},1000:{26:116,21:143,17:175,13.6:214},
+1200:{26:167,21:206,17:252,13.6:308},1400:{26:214,21:279,17:343},1600:{26:280,21:364,17:450}};
+function pipeW(d,sdr){const t=W[d]&&W[d][parseFloat(sdr)];if(t)return{w:t,est:false};
+  const e=Math.max(2,Math.ceil(d/parseFloat(sdr)*10)/10);return{w:Math.PI*(d-e)*e*0.96e-3*1.04,est:true};}
+const defStub=d=>d<=63?80:d<=90?90:d<=125?100:d<=180?120:d<=250?140:d<=355?160:d<=500?190:d<=630?220:250;
+const defCollar=d=>d<=50?12:d<=63?14:d<=90?16:d<=125?18:d<=180?25:d<=250?30:d<=355?35:d<=450?46:d<=560?50:d<=630?56:60;
+const ru=(x,dd=0)=>x.toLocaleString('ru-RU',{minimumFractionDigits:dd,maximumFractionDigits:dd});
+const sdrRu=s=>s.replace('.',',');
+const pl=(n,a,b,c)=>{const m=n%10,h=n%100;return m===1&&h!==11?a:m>=2&&m<=4&&(h<10||h>=20)?b:c;};
+function gost(Du,PN){const e=FL[Du]&&FL[Du][PN];return e?{b:e[0],n:e[1],M:e[2],row:e[3]||1}:null;}
+function anyB(Du){const r=FL[Du];if(!r)return 30;return Math.max(...Object.values(r).map(e=>e[0]));}
+function washN(){return $('wash_on')&&$('wash_on').checked?+$('wash_n').value:0;}
+function calcLen(type,M,b,h,g){const m=NUT_H[M]||0.8*M,s=WASH_S(M)*washN(),pr=Math.max(4,0.3*M);
+  const need=type==='bolt'?2*b+2*h+g+s+m+pr:2*b+2*h+g+s+2*m+2*pr;
+  return{need,L:LENS.find(x=>x>=need)||Math.ceil(need/10)*10};}
+
+// ---------- init ----------
+$('d').innerHTML=D_LIST.map(d=>`<option value="${d}">${d}</option>`).join('');
+$('sdr').innerHTML=SDRS.map(s=>`<option value="${s}">SDR ${sdrRu(s)}</option>`).join('');
+$('du').innerHTML=Object.keys(FL).map(k=>`<option value="${k}">Ду ${k}</option>`).join('');
+$('m_thr').innerHTML=THREADS.map(t=>`<option value="${t}">M${t}</option>`).join('');
+$('m_len').innerHTML=LENS.map(t=>`<option value="${t}">${t}</option>`).join('');
+const S={manual:false,pnDismiss:''};
+const IDS=['d','sdr','du','pn','mat','len','len_custom','cnt','stub_len','joints','metiz_on','btype','gtype','wash_on','wash_n','m_n','m_thr','m_len','collar','price_on','p_sup','p_city','p_pipe','p_pipe_u','p_stub','p_flan','p_gask','p_bolt','p_nut','p_wash','p_work','p_trans','p_vat'];
+const KEY='flantsovka_pe100_v2';
+function save(){try{const o={_manual:S.manual};IDS.forEach(i=>{const e=$(i);o[i]=e.type==='checkbox'?e.checked:e.value;});localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}}
+function load(){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(!o)return false;
+  IDS.forEach(i=>{if(o[i]===undefined)return;const e=$(i);if(e.type==='checkbox')e.checked=o[i];else e.value=o[i];});
+  S.manual=!!o._manual;$('m_on').checked=S.manual;return true;}catch(e){return false;}}
+function onD(){const d=+$('d').value;$('du').value=D2DU[d];$('stub_len').value=defStub(d);$('collar').value=defCollar(d);}
+if(!load()){$('d').value=160;$('sdr').value='17';$('pn').value=10;onD();}
+
+// ---------- main ----------
+function calc(){
+  const d=+$('d').value,sdr=$('sdr').value,Du=+$('du').value,PN=+$('pn').value,mat=$('mat').value;
+  const base=$('len').value==='custom'?(parseFloat($('len_custom').value)||0):+$('len').value;
+  $('len_custom_f').classList.toggle('hidden',$('len').value!=='custom');
+  const N=Math.max(1,parseInt($('cnt').value)||1),stubL=Math.max(0,+$('stub_len').value||0);
+  const mode=$('joints').value,J=mode==='n1'?N+1:mode==='nm1'?Math.max(0,N-1):2*N;
+  const metiz=$('metiz_on').checked;$('metiz_body').classList.toggle('dim',!metiz);
+  const pw=pipeW(d,sdr),pipePN=PIPE_PN[sdr];
+  $('pipe_info').innerHTML=`<span class="chip">ПЭ100 SDR ${sdrRu(sdr)} → PN ${ru(pipePN,pipePN%1?1:0)}</span><span class="chip">${pw.est?'≈':''}${ru(pw.w,2)} кг/м</span>`;
+  $('du_hint').textContent=Du===D2DU[d]?`Для трубы d${d} обычно Ду ${D2DU[d]}.`:`Внимание: для трубы d${d} обычно Ду ${D2DU[d]}, выбран Ду ${Du}.`;
+  $('du_hint').style.color=Du===D2DU[d]?'':'var(--warn)';
+
+  // проверка PN
+  const rec=[6,10,16,25].find(p=>p>=pipePN)||25,key=sdr+'|'+PN;let pnHtml='';
+  if(PN<pipePN&&S.pnDismiss!==key)pnHtml=`<div class="box bad"><b>Фланец PN ${PN} ниже давления трубы (PN ${ru(pipePN,pipePN%1?1:0)}).</b> Рекомендуется PN ${rec}${pipePN>25?' — в калькуляторе максимум PN 25, нужен фланец PN 40':''}.<div class="acts"><button class="btn btn-dark" data-pn="${rec}">Поставить PN ${rec}</button><button class="btn btn-out" data-dis="1">Оставить PN ${PN}</button></div></div>`;
+  else if(PN>rec&&S.pnDismiss!==key)pnHtml=`<div class="box info">Для SDR ${sdrRu(sdr)} достаточно PN ${rec}. Выбран PN ${PN} — дороже, но допустимо.<div class="acts"><button class="btn btn-dark" data-pn="${rec}">Поставить PN ${rec}</button><button class="btn btn-out" data-dis="1">Оставить</button></div></div>`;
+  $('pn_box').innerHTML=pnHtml;
+
+  // метизы
+  const g=gost(Du,PN),bt=$('btype').value,gt=$('gtype').value,h=Math.max(0,+$('collar').value||0);
+  if(!g&&!S.manual){S.manual=true;$('m_on').checked=true;fillManual(null);}
+  const b=g?g.b:anyB(Du);
+  const nB=S.manual?Math.max(1,parseInt($('m_n').value)||1):g.n;
+  const M=S.manual?+$('m_thr').value:g.M;
+  const lc=calcLen(bt,M,b,h,GASK_T[gt]);
+  const L=S.manual?+$('m_len').value:lc.L;
+  $('len_auto').value=`${lc.L} мм (мин. ${Math.ceil(lc.need)})`;
+  $('m_body').classList.toggle('hidden',!S.manual);
+  $('gost_box').innerHTML=g?`По ГОСТ 33259-2015 (ряд ${g.row}) для Ду ${Du} PN ${PN}: <b>${g.n} × M${g.M}</b>, толщина фланца ${g.b} мм.`:`<b>Ду ${Du} PN ${PN} нет в ГОСТ 33259 (тип 01).</b> Метизы заданы вручную, толщина фланца принята ${b} мм — проверьте.`;
+  const diff=S.manual&&g&&(nB!==g.n||M!==g.M);
+  const nuts=bt==='stud'?2:1;
+  const wn=washN();$('wash_f').classList.toggle('dim',!wn);
+  const tB=metiz?J*nB:0,tN=tB*nuts,tW=tB*wn,tG=metiz?J:0,tF=2*N,tS=2*N,pipeLen=base*N,kg=pipeLen*pw.w;
+
+  // KPI
+  const segL=base+2*stubL/1000;
+  $('kpis').innerHTML=[
+    ['Отрезков',N,'шт',`по ${ru(base,base%1?1:0)} м`],
+    ['Длина с втулками',ru(segL,3),'м','отрезок + 2 втулки'],
+    ['Труба',ru(pipeLen,1),'м',`${pw.est?'≈':''}${ru(kg,0)} кг`],
+    ['Фланцевых соединений',J,'шт',metiz?`${nB} × M${M}×${L}${wn?' + шайбы':''} на каждое`:'метизы не считаются']
+  ].map(k=>`<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]} <span class="u">${k[2]}</span></div><div class="s">${k[3]}</div></div>`).join('');
+
+  // спецификация
+  const gName={paronit:`Прокладка паронитовая ПОН-Б Ду ${Du} PN ${PN} ГОСТ 15180-86`,rubber:`Прокладка резиновая Ду ${Du} PN ${PN} ГОСТ 15180-86`,ptfe:`Прокладка PTFE Ду ${Du} PN ${PN}`}[gt];
+  const tag=diff?`<span class="tag bad">≠ ГОСТ: ${g.n}×M${g.M}</span>`:'';
+  const rows=[
+    {k:'pipe',n:`Труба ПЭ100 SDR ${sdrRu(sdr)} d${d} ГОСТ Р 70628.2-2023`,u:'м',q:pipeLen,dec:1},
+    {k:'stub',n:`Втулка под фланец ПЭ100 d${d} SDR ${sdrRu(sdr)}${stubL?`, L=${stubL} мм`:''} ГОСТ Р 70628.3-2023`,u:'шт',q:tS},
+    {k:'flan',n:`Фланец ${Du}-${PN}-01-${g?g.row:1}-B-${mat} ГОСТ 33259-2015`,u:'шт',q:tF}];
+  if(metiz)rows.push(
+    {k:'gask',n:gName,u:'шт',q:tG},
+    {k:'bolt',n:(bt==='bolt'?`Болт M${M}×${L} ГОСТ 7798-70`:`Шпилька M${M}×${L} ГОСТ 22042-76`),u:'шт',q:tB,tag},
+    {k:'nut',n:`Гайка M${M} ГОСТ 5915-70`,u:'шт',q:tN,tag},
+    ...(wn?[{k:'wash',n:`Шайба ${M} ГОСТ 11371-78`,u:'шт',q:tW,tag}]:[]));
+  $('spec').innerHTML=rows.map((r,i)=>`<tr><td class="c">${i+1}</td><td>${r.n}${r.tag||''}</td><td class="c">${r.u}</td><td class="r"><b>${ru(r.q,r.dec||0)}</b></td></tr>`).join('');
+  S.rows=rows;S.note=diff?`≠ ГОСТ 33259 (по ГОСТ ${g.n}×M${g.M})`:'';S.fn=`Спецификация_офланцовка_d${d}_SDR${sdrRu(sdr)}_Ду${Du}_PN${PN}_${N}шт`;
+
+  // стоимость
+  const pOn=$('price_on').checked;$('price_body').classList.toggle('dim',!pOn);$('cost_card').classList.toggle('hidden',!pOn);
+  S.cost=null;
+  if(pOn){const v=id=>Math.max(0,parseFloat($(id).value)||0);
+    const pu=$('p_pipe_u').value,pp=v('p_pipe');
+    const costPipe=pu==='kg'?kg*pp:pipeLen*pp;
+    const items=[[`Труба`,pu==='kg'?`${ru(kg,1)} кг × ${ru(pp,2)}`:`${ru(pipeLen,1)} м × ${ru(pp,2)}`,costPipe,'pipe'],
+      ['Втулки',`${tS} × ${ru(v('p_stub'),2)}`,tS*v('p_stub'),'stub'],['Фланцы',`${tF} × ${ru(v('p_flan'),2)}`,tF*v('p_flan'),'flan']];
+    if(metiz)items.push(['Прокладки',`${tG} × ${ru(v('p_gask'),2)}`,tG*v('p_gask'),'gask'],[bt==='bolt'?'Болты':'Шпильки',`${tB} × ${ru(v('p_bolt'),2)}`,tB*v('p_bolt'),'bolt'],
+      ['Гайки',`${tN} × ${ru(v('p_nut'),2)}`,tN*v('p_nut'),'nut']);
+    if(metiz&&wn)items.push(['Шайбы',`${tW} × ${ru(v('p_wash'),2)}`,tW*v('p_wash'),'wash']);
+    items.push(['Сварка втулок',`${tS} ${pl(tS,'стык','стыка','стыков')} × ${ru(v('p_work'),2)}`,tS*v('p_work'),'work']);
+    const shown=items.filter(x=>x[2]>0),sub=shown.reduce((a,x)=>a+x[2],0),tr=v('p_trans'),tot=sub+tr,vat=v('p_vat'),vatSum=tot*vat/(100+vat);
+    let h2=shown.map(x=>`<tr><td>${x[0]}</td><td style="color:var(--mut);font-size:12px">${x[1]}</td><td class="r">${ru(x[2],2)}</td></tr>`).join('');
+    if(!shown.length)h2=`<tr><td colspan="3" style="color:var(--mut)">Введите цены слева.</td></tr>`;
+    h2+=`<tr class="tot"><td>Итого без доставки</td><td></td><td class="r">${ru(sub,2)}</td></tr>`;
+    h2+=`<tr><td>1 отрезок под ключ</td><td style="color:var(--mut);font-size:12px">${ru(base,base%1?1:0)} м, без доставки</td><td class="r">${ru(sub/N,2)}</td></tr>`;
+    if(pipeLen)h2+=`<tr><td>1 метр трубы</td><td style="color:var(--mut);font-size:12px">без доставки</td><td class="r">${ru(sub/pipeLen,2)}</td></tr>`;
+    if(tr)h2+=`<tr><td>Доставка</td><td style="color:var(--mut);font-size:12px">весь объём</td><td class="r">${ru(tr,2)}</td></tr><tr class="tot"><td>Итого с доставкой</td><td></td><td class="r">${ru(tot,2)}</td></tr>`;
+    if(vat)h2+=`<tr><td style="color:var(--mut)">в т.ч. НДС ${vat}%</td><td></td><td class="r" style="color:var(--mut)">${ru(vatSum,2)}</td></tr>`;
+    $('cost').innerHTML=h2;
+    const sup=$('p_sup').value.trim(),city=$('p_city').value.trim();
+    $('cost_title').textContent='Стоимость'+(sup?' — '+sup:'')+(city?', '+city:'');
+    S.cost={map:Object.fromEntries(items.map(x=>[x[3],x[2]])),sub,tr,tot};
+  }
+  draw({d,Du,PN,metiz,nB,M,L,bt,gt,diff,wn});
+  draw3d({d,sdr,Du,PN,metiz,nB,M,L,bt,gt,b,h,stubL,g:GASK_T[gt],wn});
+  save();
+}
+
+function fillManual(g){if(!g){const r=FL[+$('du').value];if(r){const e=r[Math.max(...Object.keys(r).map(Number))];g={n:e[1],M:e[2]};}}
+  if(g){$('m_n').value=g.n;$('m_thr').value=g.M;}else if(!$('m_n').value){$('m_n').value=8;$('m_thr').value=20;}
+  const Du=+$('du').value,PN=+$('pn').value,gg=gost(Du,PN),b=gg?gg.b:anyB(Du);
+  $('m_len').value=calcLen($('btype').value,+$('m_thr').value,b,+$('collar').value||0,GASK_T[$('gtype').value]).L;}
+
+// ---------- схема ----------
+function draw(p){
+  const CY=112,C={pipe:'#2b3240',str:'#2f6fd6',stub:'#3d4553',fl:'#8995a7',flD:'#6b778a',bolt:'#4a5262',lab:'#475467',ln:'#b8c0cc'};
+  const gc={paronit:'#8fa37a',rubber:'#30343b',ptfe:'#eef0f2'}[p.gt];
+  const pr=26,cr=58,fr=84;let s=`<rect width="760" height="230" rx="10" fill="#f7f8fa"/>`;
+  const pipe=(x1,x2)=>`<rect x="${x1}" y="${CY-pr}" width="${x2-x1}" height="${pr*2}" fill="${C.pipe}"/><rect x="${x1}" y="${CY-2}" width="${x2-x1}" height="4" fill="${C.str}"/>`;
+  s+=pipe(20,250)+pipe(510,740);
+  s+=`<rect x="250" y="${CY-pr-1}" width="100" height="${pr*2+2}" fill="${C.stub}"/><rect x="410" y="${CY-pr-1}" width="100" height="${pr*2+2}" fill="${C.stub}"/>`;
+  s+=`<line x1="250" y1="${CY-pr-6}" x2="250" y2="${CY+pr+6}" stroke="#d0d5dd" stroke-dasharray="3 2"/><line x1="510" y1="${CY-pr-6}" x2="510" y2="${CY+pr+6}" stroke="#d0d5dd" stroke-dasharray="3 2"/>`;
+  s+=`<rect x="350" y="${CY-cr}" width="24" height="${cr*2}" rx="2" fill="${C.stub}"/><rect x="386" y="${CY-cr}" width="24" height="${cr*2}" rx="2" fill="${C.stub}"/>`;
+  s+=`<rect x="374" y="${CY-cr+2}" width="12" height="${cr*2-4}" fill="${gc}" stroke="#9aa3b2" stroke-width=".6"/>`;
+  const flan=(x)=>`<rect x="${x}" y="${CY-fr}" width="28" height="${fr-pr-4}" rx="2" fill="${C.fl}"/><rect x="${x}" y="${CY+pr+4}" width="28" height="${fr-pr-4}" rx="2" fill="${C.fl}"/>`;
+  s+=flan(322)+flan(410);
+  const wR=p.wn>=1,wL=p.wn>=2,WC='#d8b04a';
+  if(p.metiz){[CY-72,CY+72].forEach(y=>{const lx=wL?300:306,rx=wR?444:440;
+    s+=`<rect x="${lx-6}" y="${y-3}" width="${rx+20-lx}" height="6" fill="${C.bolt}"/>`;
+    s+=`<rect x="${lx}" y="${y-9}" width="14" height="18" rx="2" fill="${p.bt==='bolt'?C.bolt:'#2f3542'}"/>`;
+    if(wL)s+=`<rect x="316" y="${y-11}" width="5" height="22" rx="1" fill="${WC}" stroke="#9a7b25" stroke-width=".6"/>`;
+    if(wR)s+=`<rect x="439" y="${y-11}" width="5" height="22" rx="1" fill="${WC}" stroke="#9a7b25" stroke-width=".6"/>`;
+    s+=`<rect x="${rx}" y="${y-9}" width="14" height="18" rx="2" fill="#2f3542"/>`;});}
+  const lab=(x,y,tx,ty,t,anc)=>`<line x1="${x}" y1="${y}" x2="${tx}" y2="${ty}" stroke="${C.ln}"/><circle cx="${x}" cy="${y}" r="2" fill="${C.lab}"/><text x="${anc==='end'?tx-4:tx+4}" y="${ty+4}" font-size="11" fill="${C.lab}" text-anchor="${anc||'start'}" font-family="Arial,sans-serif">${t}</text>`;
+  s+=lab(70,CY-pr,40,22,`Труба ПЭ100 d${p.d}`);
+  s+=lab(290,CY+pr,250,212,`Втулка d${p.d}`,'end');
+  s+=lab(336,CY-fr,300,22,`Фланец Ду ${p.Du} PN ${p.PN}`,'end');
+  s+=lab(380,CY+cr-6,560,212,`Прокладка ${ {paronit:'паронит',rubber:'резина',ptfe:'PTFE'}[p.gt]}`);
+  if(p.metiz&&p.wn)s+=lab(441,CY+72+11,600,186,`Шайба ${p.M} — ${p.wn} шт. на ${p.bt==='bolt'?'болт':'шпильку'}`);
+  if(p.metiz)s+=lab(470,CY-72,560,22,`${p.nB} × ${p.bt==='bolt'?pl(p.nB,'болт','болта','болтов'):pl(p.nB,'шпилька','шпильки','шпилек')} M${p.M}×${p.L}${p.diff?' (≠ ГОСТ)':''}`);
+  $('svg').innerHTML=s;
+}
+
+// ---------- 3D ----------
+// ГОСТ 33259-2015 тип 01 ряд 1: [D наружный, D1 окружность отверстий]
+const DIM={32:{6:[120,90],10:[135,100],16:[135,100],25:[135,100]},40:{6:[130,100],10:[145,110],16:[145,110],25:[145,110]},
+50:{6:[140,110],10:[160,125],16:[160,125],25:[160,125]},65:{6:[160,130],10:[180,145],16:[180,145],25:[180,145]},
+80:{6:[185,150],10:[195,160],16:[195,160],25:[195,160]},100:{6:[205,170],10:[215,180],16:[215,180],25:[230,190]},
+125:{6:[235,200],10:[245,210],16:[245,210],25:[270,220]},150:{6:[260,225],10:[280,240],16:[280,240],25:[300,250]},
+200:{6:[315,280],10:[335,295],16:[335,295],25:[360,310]},250:{6:[370,335],10:[390,350],16:[405,355],25:[425,370]},
+300:{6:[435,395],10:[440,400],16:[460,410],25:[485,430]},350:{6:[485,445],10:[500,460],16:[520,470],25:[550,490]},
+400:{6:[535,495],10:[565,515],16:[580,525],25:[610,550]},450:{6:[590,550],10:[615,565],16:[640,585],25:[660,600]},
+500:{6:[640,600],10:[670,620],16:[710,650],25:[730,660]},600:{6:[755,705],10:[780,725],16:[840,770],25:[840,770]},
+700:{6:[860,810],10:[895,840],16:[910,840],25:[960,875]},800:{6:[975,920],10:[1010,950],16:[1020,950],25:[1075,990]},
+900:{6:[1075,1020],10:[1110,1050],16:[1120,1050]},1000:{6:[1175,1120],10:[1220,1160],16:[1255,1170]},
+1200:{6:[1400,1340],10:[1455,1380],16:[1485,1390]},1400:{6:[1620,1560],10:[1675,1590]},1600:{6:[1820,1760],10:[1915,1820]}};
+const COL={wash:0xd8b04a,pipe:0x23272e,stripe:0x2f6fd6,stub:0x3a404b,flan:0x9aa5b4,bolt:0xc2c8d0,nut:0x8d96a3,gask:{paronit:0x8fa37a,rubber:0x2a2d33,ptfe:0xf1f2f4}};
+const T3={ok:false};
+function init3d(){
+  if(T3.ok||typeof THREE==='undefined')return T3.ok;
+  const box=$('c3d');T3.r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+  T3.r.setPixelRatio(Math.min(2,window.devicePixelRatio||1));T3.r.localClippingEnabled=true;box.prepend(T3.r.domElement);
+  T3.s=new THREE.Scene();T3.cam=new THREE.PerspectiveCamera(35,1,1,100000);
+  T3.s.add(new THREE.HemisphereLight(0xffffff,0x8a94a6,0.9));
+  const dl=new THREE.DirectionalLight(0xffffff,0.8);dl.position.set(1,1.4,1.2);T3.s.add(dl);
+  const dl2=new THREE.DirectionalLight(0xffffff,0.35);dl2.position.set(-1,-0.4,-0.8);T3.s.add(dl2);
+  T3.ctl=new THREE.OrbitControls(T3.cam,T3.r.domElement);T3.ctl.enableDamping=true;
+  T3.clip=new THREE.Plane(new THREE.Vector3(0,0,-1),0);
+  const rs=()=>{const w=box.clientWidth,h=box.clientHeight;if(!w)return;T3.r.setSize(w,h,false);T3.cam.aspect=w/h;T3.cam.updateProjectionMatrix();};
+  window.addEventListener('resize',rs);T3.rs=rs;rs();
+  (function loop(){requestAnimationFrame(loop);T3.ctl.update();T3.r.render(T3.s,T3.cam);})();
+  $('explode').addEventListener('input',place);
+  $('cut').addEventListener('change',()=>{T3.mats.forEach(m=>{m.clippingPlanes=$('cut').checked?[T3.clip]:[];m.needsUpdate=true;});});
+  $('reset3d').onclick=()=>fit(true);
+  T3.mats=[];return T3.ok=true;
+}
+function mat(c,o){const m=new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.25,roughness:.55,side:THREE.DoubleSide,clippingPlanes:$('cut').checked?[T3.clip]:[]},o||{}));T3.mats.push(m);return m;}
+// тело вращения вокруг оси Y по профилю [[r,y],...]
+function lathe(pts,m){return new THREE.Mesh(new THREE.LatheGeometry(pts.map(p=>new THREE.Vector2(p[0],p[1])),64),m);}
+function ring(ro,ri,y0,y1){return[[ri,y0],[ro,y0],[ro,y1],[ri,y1],[ri,y0]];}
+function hexMesh(r,hgt,m){const g=new THREE.CylinderGeometry(r,r,hgt,6);return new THREE.Mesh(g,m);}
+function draw3d(p){
+  if(!init3d()){$('c3d').innerHTML='<div style="padding:20px;color:var(--mut)">3D недоступно без интернета — откройте вкладку «Схема».</div>';return;}
+  const key=JSON.stringify(p);if(key===T3.key)return;const first=!T3.key;T3.key=key;
+  if(T3.g){T3.s.remove(T3.g);T3.g.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
+  T3.mats=[];const G=new THREE.Group();T3.parts=[];
+  const add=(obj,k)=>{obj.userData.k=k;obj.userData.y0=obj.position.y;G.add(obj);T3.parts.push(obj);};
+  const dm=(DIM[p.Du]&&(DIM[p.Du][p.PN]||DIM[p.Du][Math.max(...Object.keys(DIM[p.Du]))]))||[p.d*1.6,p.d*1.35];
+  const D=dm[0],D1=dm[1],hole=p.M+(p.M<=20?2:p.M<=30?3:4);
+  const ro=p.d/2,e=Math.max(2,p.d/parseFloat(p.sdr)),ri=ro-e;
+  const rc=Math.max(ro+5,(D1-hole)/2-2),h=Math.max(4,p.h),b=p.b,g=p.g,stub=Math.max(p.stubL,h+20),PL=Math.max(150,p.d*1.3);
+  const a=g/2,ch=Math.min(12,(rc-ro)*0.6);
+  const mPipe=mat(COL.pipe,{metalness:0,roughness:.75}),mStub=mat(COL.stub,{metalness:0,roughness:.6}),mFl=mat(COL.flan,{metalness:.6,roughness:.38}),
+        mB=mat(COL.bolt,{metalness:.7,roughness:.3}),mW=mat(COL.wash,{metalness:.8,roughness:.3}),mN=mat(COL.nut,{metalness:.65,roughness:.35}),mG=mat(COL.gask[p.gt],{metalness:0,roughness:.9}),mS=mat(COL.stripe,{metalness:0,roughness:.6});
+  [1,-1].forEach(s=>{
+    const Y=y=>s*y;
+    // втулка: бурт + конус + шейка
+    const sp=[[ri,a],[rc,a],[rc,a+h],[ro+ch,a+h],[ro,a+h+ch],[ro,a+stub],[ri,a+stub],[ri,a]].map(q=>[q[0],Y(q[1])]);
+    if(s<0)sp.reverse();add(lathe(sp,mStub),'stub'+s);
+    // труба + полоса
+    const pp=ring(ro,ri,Y(a+stub+1),Y(a+stub+PL));if(s<0)pp.reverse();add(lathe(pp,mPipe),'pipe'+s);
+    const st=new THREE.Mesh(new THREE.BoxGeometry(1.2,PL,Math.max(4,p.d*0.06)),mS);st.position.set(-ro-0.3,Y(a+stub+PL/2),0);add(st,'pipe'+s);
+    // фланец с отверстиями
+    const sh=new THREE.Shape();sh.absarc(0,0,D/2,0,Math.PI*2,false);
+    const hh=new THREE.Path();hh.absarc(0,0,ro+3,0,Math.PI*2,true);sh.holes.push(hh);
+    for(let i=0;i<p.nB;i++){const t=2*Math.PI*i/p.nB+Math.PI/p.nB,ph=new THREE.Path();ph.absarc(D1/2*Math.cos(t),D1/2*Math.sin(t),hole/2,0,Math.PI*2,true);sh.holes.push(ph);}
+    const fg=new THREE.ExtrudeGeometry(sh,{depth:b,bevelEnabled:true,bevelThickness:1,bevelSize:1,bevelSegments:1,curveSegments:48});
+    fg.rotateX(-Math.PI/2);const fm=new THREE.Mesh(fg,mFl);fm.position.y=s>0?a+h:-(a+h+b);add(fm,'flan'+s);
+  });
+  const gp=ring(rc-1,ri,-a,a);add(lathe(gp,mG),'gask');
+  if(p.metiz){
+    const xR=a+h+b,nh=NUT_H[p.M]||0.8*p.M,ws=WASH_S(p.M),wr=p.M*1.0,nr=p.M*0.95;
+    for(let i=0;i<p.nB;i++){const t=2*Math.PI*i/p.nB+Math.PI/p.nB,x=D1/2*Math.cos(t),z=-D1/2*Math.sin(t);
+      const mk=(geo,m,y,k)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);add(o,k);};
+      const wR=p.wn>=1?ws:0,wL=p.wn>=2?ws:0,wash=(y,k)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(wr,wr,ws,32),mW);o.position.set(x,y,z);add(o,k);};
+      if(wR)wash(xR+ws/2,'washR');if(wL)wash(-xR-ws/2,'washL');
+      if(p.bt==='bolt'){const hb=-xR-wL;
+        mk(new THREE.CylinderGeometry(p.M/2,p.M/2,p.L,16),mB,hb+p.L/2,'boltL');
+        const hd=hexMesh(nr,p.M*0.65,mB);hd.position.set(x,hb-p.M*0.65/2,z);add(hd,'boltL');
+        const n=hexMesh(nr,nh,mN);n.position.set(x,xR+wR+nh/2,z);add(n,'nutR');
+      }else{
+        mk(new THREE.CylinderGeometry(p.M/2,p.M/2,p.L,16),mB,(wR-wL)/2,'stud');
+        [[1,wR],[-1,wL]].forEach(([s,w])=>{const n=hexMesh(nr,nh,mN);n.position.set(x,s*(xR+w+nh/2),z);add(n,'nut'+s);});
+      }}
+  }
+  G.rotation.z=-Math.PI/2;T3.s.add(G);T3.g=G;T3.size=Math.max(D,2*(a+stub+PL));
+  place();if(first)fit(true);
+  const gN={paronit:'паронит',rubber:'резина',ptfe:'PTFE'}[p.gt],hx=c=>'#'+c.toString(16).padStart(6,'0');
+  $('legend').innerHTML=[[COL.pipe,`Труба ПЭ100 d${p.d} SDR ${sdrRu(p.sdr)}`],[COL.stub,`Втулка d${p.d}, бурт ${h} мм`],[COL.flan,`Фланец Ду ${p.Du} PN ${p.PN}: D ${D}, D1 ${D1}, b ${b} мм`],[COL.gask[p.gt],`Прокладка ${gN}`]]
+    .concat(p.metiz?[[COL.bolt,`${p.nB} × ${p.bt==='bolt'?'болт':'шпилька'} M${p.M}×${p.L}`]]:[]).concat(p.metiz&&p.wn?[[COL.wash,`Шайба ${p.M}, ${p.wn} шт. на ${p.bt==='bolt'?'болт':'шпильку'}`]]:[]).map(x=>`<span><i style="background:${hx(x[0])}"></i>${x[1]}</span>`).join('');
+}
+function place(){if(!T3.parts)return;const k=+$('explode').value,u=Math.max(40,T3.size*0.09);
+  const off={stub1:1,'stub-1':-1,pipe1:1,'pipe-1':-1,flan1:2.2,'flan-1':-2.2,gask:0,boltL:-3.6,nutR:3.6,washR:3,washL:-3,stud:0,nut1:3.6,'nut-1':-3.6};
+  T3.parts.forEach(o=>{o.position.y=o.userData.y0+k*u*(off[o.userData.k]||0);});}
+function fit(force){if(!T3.ok)return;const R=T3.size*0.75;T3.cam.position.set(R*0.9,R*0.55,R*1.25);T3.cam.near=R/100;T3.cam.far=R*20;T3.cam.updateProjectionMatrix();T3.ctl.target.set(0,0,0);T3.ctl.update();}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  $('v3d').classList.toggle('hidden',t.dataset.v!=='3d');$('v2d').classList.toggle('hidden',t.dataset.v!=='2d');if(T3.rs)T3.rs();});
+
+// ---------- копирование / печать ----------
+function specAoa(){const note=['bolt','nut','wash'];const has=!!S.note;
+  const head=['№','Наименование','Ед. изм.','Кол-во'].concat(has?['Примечание']:[]);
+  return [head].concat(S.rows.map((r,i)=>[i+1,r.n,r.u,r.dec?Math.round(r.q*10)/10:r.q].concat(has?[note.includes(r.k)?S.note:'']:[])));}
+function exportXlsx(){const aoa=specAoa(),fn=S.fn||'Спецификация';
+  if(typeof XLSX!=='undefined'){const ws=XLSX.utils.aoa_to_sheet(aoa);const name=fn+'.xlsx';
+    ws['!cols']=[{wch:5},{wch:70},{wch:9},{wch:10}].concat(aoa[0].length>4?[{wch:32}]:[]);
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Спецификация');if(DL){const data=XLSX.write(wb,{type:'array',bookType:'xlsx'});DL.save({filename:name,data}).catch(e=>{if(e&&e.code!=='declined')alertBox('Не удалось сохранить файл: '+(e.message||e.code));});return;}
+    if(IN_ARTIFACT){alertBox('Скачивание файлов в этом окне недоступно — используйте кнопку «Копировать» и вставьте в Excel.');return;}
+    XLSX.writeFile(wb,name);return;}
+  // без интернета — .xls (HTML-таблица, Excel открывает)
+  const esc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const html='<html><head><meta charset="UTF-8"></head><body><table border="1">'+aoa.map((r,i)=>'<tr>'+r.map(c=>i?`<td${typeof c==='number'?' style="mso-number-format:General"':''}>${esc(c)}</td>`:`<th>${esc(c)}</th>`).join('')+'</tr>').join('')+'</table></body></html>';
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'}));a.download=fn+'.xls';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+function copySpec(){
+  const pOn=S.cost;let t=['№','Наименование','Ед.','Кол-во'].concat(pOn?['Сумма, ₽']:[]).join('\t')+'\n';
+  S.rows.forEach((r,i)=>{t+=[i+1,r.n,r.u,String(r.dec?r.q.toFixed(1):r.q).replace('.',',')].concat(pOn?[(pOn.map[r.k]||0).toFixed(2).replace('.',',')]:[]).join('\t')+'\n';});
+  if(pOn){if(pOn.map.work)t+=`\tСварка втулок\t\t\t${pOn.map.work.toFixed(2).replace('.',',')}\n`;
+    t+=`\tИтого без доставки\t\t\t${pOn.sub.toFixed(2).replace('.',',')}\n`;if(pOn.tr)t+=`\tИтого с доставкой\t\t\t${pOn.tot.toFixed(2).replace('.',',')}\n`;}
+  const done=()=>{$('copied').classList.remove('hidden');setTimeout(()=>$('copied').classList.add('hidden'),1600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fb(t,done));else fb(t,done);
+}
+function fb(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done();}catch(e){}a.remove();}
+
+// ---------- события ----------
+document.addEventListener('input',e=>{if(e.target.closest('.inputs')&&e.target.id!=='m_on')calc();});
+$('d').addEventListener('change',()=>{onD();if(S.manual)fillManual(gost(+$('du').value,+$('pn').value));calc();});
+$('du').addEventListener('change',()=>{if(S.manual&&gost(+$('du').value,+$('pn').value))fillManual(null);calc();});
+$('sdr').addEventListener('change',()=>{S.pnDismiss='';calc();});
+$('pn_box').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.pn){$('pn').value=b.dataset.pn;S.pnDismiss='';}else S.pnDismiss=$('sdr').value+'|'+$('pn').value;calc();});
+$('m_on').addEventListener('change',e=>{
+  if(e.target.checked){e.target.checked=false;const g=gost(+$('du').value,+$('pn').value);
+    $('m_confirm').innerHTML=`<b>Метизы будут отличаться от ГОСТ 33259-2015.</b> Для Ду ${$('du').value} PN ${$('pn').value} по ГОСТ: ${g?g.n+' × M'+g.M:'нет данных'}. Болты, не соответствующие отверстиям фланца, могут не встать. В спецификации такие позиции помечаются «≠ ГОСТ».<div class="acts"><button class="btn btn-dark" id="m_yes">Да, задать вручную</button><button class="btn btn-out" id="m_no">Отмена</button></div>`;
+    $('m_confirm').classList.remove('hidden');
+    $('m_yes').onclick=()=>{S.manual=true;$('m_on').checked=true;$('m_confirm').classList.add('hidden');fillManual(g);calc();};
+    $('m_no').onclick=()=>{$('m_confirm').classList.add('hidden');};
+  }else{if(!gost(+$('du').value,+$('pn').value)){e.target.checked=true;return;}S.manual=false;$('m_confirm').classList.add('hidden');calc();}
+});
+$('btn_xlsx').onclick=exportXlsx;$('btn_xlsx2').onclick=exportXlsx;$('btn_copy2').onclick=copySpec;$('btn_print').onclick=()=>window.print();
+// на опубликованной странице (claude.ai): печать недоступна, файлы — через downloads
+let DL=null;const IN_ARTIFACT=!!(window.claude&&window.claude.use);
+function alertBox(t){const b=$('copied');b.textContent=t;b.style.color='var(--bad)';b.classList.remove('hidden');setTimeout(()=>{b.classList.add('hidden');b.textContent='скопировано';b.style.color='';},5000);}
+if(IN_ARTIFACT){$('btn_print').classList.add('hidden');window.claude.use('downloads').then(d=>{DL=d;}).catch(()=>{});}
+calc();
+</script>
+</body>
+</html>
