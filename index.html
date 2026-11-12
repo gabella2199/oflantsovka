@@ -84,6 +84,28 @@ tr:last-child td{border-bottom:0}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.15)}
 @media(max-width:960px){.grid{grid-template-columns:1fr}.out{position:static}.kpis{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.g3{grid-template-columns:1fr 1fr}}
+.grid>*,.card,.f,.g2>*,.g3>*{min-width:0}
+select,input[type=number],input[type=text]{max-width:100%;min-width:0}
+.mnav{display:none}
+@media(max-width:960px){
+  .mnav{display:flex;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);
+    padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));box-shadow:0 -4px 14px rgba(0,0,0,.08)}
+  .mnav a{flex:1;text-align:center;text-decoration:none;font-weight:650;font-size:14px;padding:10px 6px;border-radius:9px;color:var(--ink);background:var(--soft)}
+  .mnav a.pri{background:var(--acc);color:var(--card)}
+  body{padding-bottom:70px}
+  #out{scroll-margin-top:8px}
+}
+@media(max-width:600px){
+  .top{padding:14px 0}.top h1{font-size:18px}.top p{font-size:11px}
+  .top-actions{width:100%}.top-actions .btn{flex:1}
+  #btn_print{display:none}
+  select,input[type=number],input[type=text]{font-size:16px;padding:9px 10px}
+  .card{padding:14px;border-radius:10px}
+  .c3d{height:290px}
+  td{padding:7px 6px}th{padding:6px}
+  .kpi .v{font-size:18px}
+  .tab{padding:7px 14px}
+}
 @media print{.top-actions,.inputs,.noprint{display:none!important}.grid{display:block}body{background:#fff}.card,.kpi{border-color:#ccc}.top{background:#fff;color:#000;border-bottom:2px solid #000}.top p{color:#444}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -98,7 +120,7 @@ tr:last-child td{border-bottom:0}
 </div></header>
 
 <main class="wrap grid">
-<section class="inputs">
+<section class="inputs" id="inp">
 
   <div class="card">
     <div class="ch"><span class="num">1</span><h2>Труба</h2></div>
@@ -192,7 +214,7 @@ tr:last-child td{border-bottom:0}
   <div class="card"><div class="title-row"><h2>Узел соединения</h2>
       <div class="tabs noprint"><button class="tab on" data-v="3d">3D</button><button class="tab" data-v="2d">Схема</button></div></div>
     <div id="v3d">
-      <div class="c3d" id="c3d"><div class="c3d-hint">вращать — ЛКМ · сдвиг — ПКМ · масштаб — колесо</div></div>
+      <div class="c3d" id="c3d"><div class="c3d-hint" id="c3d_hint">вращать — ЛКМ · сдвиг — ПКМ · масштаб — колесо</div></div>
       <div class="ctl3d noprint">
         <label class="sw" style="color:var(--ink)">Разнести детали <input type="range" id="explode" min="0" max="1" step="0.01" value="0" style="width:140px"></label>
         <label class="sw" style="color:var(--ink)"><input type="checkbox" id="cut">Разрез</label>
@@ -207,6 +229,7 @@ tr:last-child td{border-bottom:0}
     <table id="cost_single_t"><thead><tr><th>Позиция</th><th>Расчёт</th><th class="r">Сумма, ₽</th></tr></thead><tbody id="cost_single"></tbody></table><div id="cost_cmp"></div></div>
 </section>
 </main>
+<nav class="mnav" aria-label="Навигация"><a href="#inp">Параметры</a><a href="#out" class="pri">Результат ↓</a></nav>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -447,6 +470,7 @@ const DIM={32:{6:[120,90],10:[135,100],16:[135,100],25:[135,100]},40:{6:[130,100
 1200:{6:[1400,1340],10:[1455,1380],16:[1485,1390]},1400:{6:[1620,1560],10:[1675,1590]},1600:{6:[1820,1760],10:[1915,1820]}};
 const COL={wash:0xd8b04a,pipe:0x23272e,stripe:0x2f6fd6,stub:0x3a404b,flan:0x9aa5b4,bolt:0xc2c8d0,nut:0x8d96a3,gask:{paronit:0x8fa37a,rubber:0x2a2d33,ptfe:0xf1f2f4}};
 const T3={ok:false};
+if(window.matchMedia&&matchMedia('(pointer:coarse)').matches){const h=document.getElementById('c3d_hint');if(h)h.textContent='вращать — одним пальцем · масштаб — двумя';}
 function init3d(){
   if(T3.ok||typeof THREE==='undefined')return T3.ok;
   const box=$('c3d');T3.r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
